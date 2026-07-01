@@ -1,0 +1,31 @@
+{
+  "schemaVersion": 1,
+  "id": "servermanager",
+  "version": "${version}",
+  "name": "Server Manager",
+  "description": "A powerful, lightweight administration and utility mod for Minecraft servers. Includes maintenance mode, system performance commands, server broadcasts, and custom player welcome messages. On the client-side, it adds multiplayer server-list searching, pinned servers, and GeoIP server country flags.",
+  "authors": [
+    "Arena Developer"
+  ],
+  "contact": {
+    "homepage": "https://example.com/servermanager",
+    "sources": "https://github.com/example/servermanager"
+  },
+  "license": "MIT",
+  "icon": "assets/servermanager/icon.png",
+  "environment": "*",
+  "entrypoints": {
+    "main": [
+      "com.example.servermanager.ServerManager"
+    ]
+  },
+  "mixins": [
+    "servermanager.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.16.0",
+    "fabric-api": "*",
+    "minecraft": ">=1.21.11",
+    "java": ">=21"
+  }
+}

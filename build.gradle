@@ -1,0 +1,68 @@
+plugins {
+    id 'fabric-loom' version "${loom_version}"
+    id 'maven-publish'
+}
+
+version = project.mod_version
+group = project.maven_group
+
+base {
+    archivesName = project.archives_base_name
+}
+
+repositories {
+    // Standard repositories are handled by Fabric Loom automatically.
+    // You can add extra repositories here if you depend on other third-party APIs/mods.
+    maven { url = "https://maven.terraformersmc.com/" } // For ModMenu if needed
+}
+
+dependencies {
+    // Minecraft dependency
+    minecraft "com.mojang:minecraft:${project.minecraft_version}"
+
+    // Yarn mappings for deobfuscation (using standard Yarn mappings for 1.21.1)
+    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
+
+    // Fabric Loader
+    modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
+
+    // Fabric API (provides crucial hooks for commands, events, network, etc.)
+    modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
+}
+
+processResources {
+    inputs.property "version", project.version
+
+    filesMatching("fabric.mod.json") {
+        expand "version": project.version
+    }
+}
+
+tasks.withType(JavaCompile).configureEach {
+    // Minecraft 1.20.5+ uses Java 21
+    it.options.release = 21
+    it.options.encoding = "UTF-8"
+}
+
+java {
+    // Generate sources jar to help other developers understand the mod code
+    withSourcesJar()
+
+    sourceCompatibility = JavaVersion.VERSION_21
+    targetCompatibility = JavaVersion.VERSION_21
+}
+
+jar {
+    from("LICENSE") {
+        rename { "${it}_${project.base.archivesName.get()}" }
+    }
+}
+
+// Configuration for maven publishing (e.g. for developer APIs)
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+        }
+    }
+}
