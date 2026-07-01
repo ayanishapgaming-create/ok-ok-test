@@ -1,5 +1,5 @@
 plugins {
-    id 'fabric-loom' version "${loom_version}"
+    id 'net.fabricmc.fabric-loom-remap' version "${loom_version}"
     id 'maven-publish'
 }
 
@@ -20,7 +20,7 @@ dependencies {
     // Minecraft dependency
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    // Yarn mappings for deobfuscation (using standard Yarn mappings for 1.21.1)
+    // Yarn mappings for deobfuscation (using standard Yarn mappings for 1.21.11)
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
     // Fabric Loader
