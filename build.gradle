@@ -11,15 +11,25 @@ base {
 }
 
 repositories {
-    // Standard repositories are handled by Fabric Loom automatically.
-    maven { url = "https://maven.terraformersmc.com/" } // For ModMenu if needed
+    // Fabric Maven
+    maven {
+        url = "https://maven.fabricmc.net/"
+    }
+
+    // Maven Central
+    mavenCentral()
+
+    // ModMenu / TerraformersMC
+    maven {
+        url = "https://maven.terraformersmc.com/"
+    }
 }
 
 dependencies {
-    // Minecraft dependency
+    // Minecraft
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
 
-    // Yarn mappings for deobfuscation
+    // Yarn mappings
     mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
 
     // Fabric Loader
@@ -33,32 +43,44 @@ processResources {
     inputs.property "version", project.version
 
     filesMatching("fabric.mod.json") {
-        expand "version": project.version
+        expand(
+                "version": project.version
+        )
     }
 }
 
 tasks.withType(JavaCompile).configureEach {
-    // Minecraft 1.20.5+ uses Java 21
-    it.options.release = 21
-    it.options.encoding = "UTF-8"
+    options.encoding = "UTF-8"
+    options.release.set(21)
 }
 
 java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21)
+    }
+
     withSourcesJar()
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
 }
 
 jar {
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
     }
+
+    reproducibleFileOrder = true
+    preserveFileTimestamps = false
 }
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
+        create("mavenJava", MavenPublication) {
+            artifactId = project.archives_base_name
+
             from components.java
         }
+    }
+
+    repositories {
+        // Add your Maven repository here when publishing.
     }
 }
