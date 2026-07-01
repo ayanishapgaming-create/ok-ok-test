@@ -67,3 +67,6 @@ jobs:
       with:
         name: ServerManager-Fabric-1.21.1
         path: build/libs/
+        
+    - name: Clear Loom cache
+      run: rm -rf ~/.gradle/caches/fabric-loom
