@@ -57,16 +57,17 @@ jobs:
     - name: Setup Gradle
       uses: gradle/actions/setup-gradle@v4
 
-    # Step 6: Build the Minecraft mod (compiles, deobfuscates, remaps, and packages the mod jar)
+    # Step 6: Clear Loom cache (fixes stale/corrupted cache from cancelled runs)
+    - name: Clear Loom cache
+      run: rm -rf ~/.gradle/caches/fabric-loom
+
+    # Step 7: Build the Minecraft mod (compiles, deobfuscates, remaps, and packages the mod jar)
     - name: Build Mod with Gradle
       run: ./gradlew build
 
-    # Step 7: Archive the compiled mod .jar files so they can be downloaded from the run summary
+    # Step 8: Archive the compiled mod .jar files so they can be downloaded from the run summary
     - name: Upload Build Artifacts
       uses: actions/upload-artifact@v4
       with:
         name: ServerManager-Fabric-1.21.1
         path: build/libs/
-        
-    - name: Clear Loom cache
-      run: rm -rf ~/.gradle/caches/fabric-loom
