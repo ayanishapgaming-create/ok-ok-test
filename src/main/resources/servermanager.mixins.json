@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_21",
   "mixins": [],
   "client": [
-    "ScreenMixin",
+    "MultiplayerScreenMixin",
     "MultiplayerServerListWidgetMixin",
     "MultiplayerScreenAccessor",
     "ServerEntryMixin"
