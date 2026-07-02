@@ -44,15 +44,16 @@ public abstract class ServerEntryMixin {
         method = "render",
         at = @At(
             value = "INVOKE",
-            target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)I"
+            target = "Lnet/minecraft/client/gui/DrawContext;drawText(Lnet/minecraft/client/font/TextRenderer;Ljava/lang/String;IIIZ)V"
         )
     )
-    private int redirectServerNameDraw(DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow) {
+    private void redirectServerNameDraw(DrawContext context, TextRenderer textRenderer, String text, int x, int y, int color, boolean shadow) {
         if (text != null && text.equals(this.server.name)) {
             // Shift the server name 31 pixels to the right
-            return context.drawText(textRenderer, text, x + 31, y, color, shadow);
+            context.drawText(textRenderer, text, x + 31, y, color, shadow);
+        } else {
+            context.drawText(textRenderer, text, x, y, color, shadow);
         }
-        return context.drawText(textRenderer, text, x, y, color, shadow);
     }
 
     /**
@@ -95,20 +96,11 @@ public abstract class ServerEntryMixin {
                 // Render the dynamically downloaded flag texture
                 Identifier flagId = Identifier.of("servermanager", "flags/" + countryCode.toLowerCase());
                 // Flags from flagcdn are 20x15, we draw them resized to 16x11
-                context.drawTexture(flagId, flagX, flagY, 0, 0, 16, 11, 16, 11);
+                context.drawTexture(flagId, flagX, flagY, 0.0f, 0.0f, 16, 11, 16, 11);
             }
         } else {
             // Loading placeholder
             context.drawText(client.textRenderer, "[..]", flagX - 1, flagY, 0x55555555, false);
-        }
-
-        // 4. Handle Hover Tooltip on Country Flag
-        if (hovered && countryCode != null) {
-            // Flag hitbox: flagX to flagX + 16, flagY to flagY + 11
-            if (mouseX >= flagX && mouseX <= flagX + 16 && mouseY >= flagY && mouseY <= flagY + 11) {
-                String countryName = ServerSearchManager.getCountryName(this.server.address);
-                this.screen.setTooltip(Text.literal(countryName));
-            }
         }
     }
 
@@ -129,7 +121,7 @@ public abstract class ServerEntryMixin {
 
                 // Play standard GUI click sound
                 MinecraftClient.getInstance().getSoundManager().play(
-                    PositionedSoundInstance.master(SoundEvents.UI_BUTTON_CLICK, 1.0F)
+                    PositionedSoundInstance.of(SoundEvents.UI_BUTTON_CLICK, 1.0F)
                 );
 
                 // Force-reloads the server list widget to apply new pinned order sorting immediately

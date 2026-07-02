@@ -99,8 +99,6 @@ public abstract class ScreenMixin {
         if (isMultiplayerScreen() && this.searchField != null && this.searchField.isFocused()) {
             if (keyCode == 256) { // ESC key
                 this.searchField.setFocused(false);
-            } else {
-                this.searchField.keyPressed(keyCode, scanCode, modifiers);
             }
             cir.setReturnValue(true);
         }
@@ -109,7 +107,6 @@ public abstract class ScreenMixin {
     @Inject(method = "charTyped", at = @At("HEAD"), cancellable = true)
     private void onCharTyped(char chr, int modifiers, CallbackInfoReturnable<Boolean> cir) {
         if (isMultiplayerScreen() && this.searchField != null && this.searchField.isFocused()) {
-            this.searchField.charTyped(chr, modifiers);
             cir.setReturnValue(true);
         }
     }

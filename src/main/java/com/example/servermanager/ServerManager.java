@@ -34,7 +34,7 @@ public class ServerManager implements ModInitializer {
             ServerPlayerEntity player = handler.getPlayer();
 
             // 1. Check Maintenance Mode
-            if (config.maintenanceMode && !server.getPlayerManager().isOperator(player.getGameProfile())) {
+            if (config.maintenanceMode && !server.getPlayerManager().isOperator(player.getPlayerConfigEntry())) {
                 LOGGER.info("Player {} tried to join during maintenance mode. Disconnecting.", player.getName().getString());
                 handler.disconnect(TextUtil.format(config.maintenanceKickMessage));
                 return;

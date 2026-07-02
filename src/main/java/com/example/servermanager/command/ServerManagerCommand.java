@@ -93,7 +93,7 @@ public class ServerManagerCommand {
             Text kickReason = TextUtil.format(config.maintenanceKickMessage);
 
             for (ServerPlayerEntity player : server.getPlayerManager().getPlayerList()) {
-                if (!server.getPlayerManager().isOperator(player.getGameProfile())) {
+                if (!server.getPlayerManager().isOperator(player.getPlayerConfigEntry())) {
                     player.networkHandler.disconnect(kickReason);
                 }
             }
