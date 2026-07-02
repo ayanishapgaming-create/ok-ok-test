@@ -7,11 +7,12 @@ import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
 import net.minecraft.client.gui.widget.TextFieldWidget;
 import net.minecraft.text.Text;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
+
+import java.util.WeakHashMap;
 
 @Mixin(MultiplayerScreen.class)
 public abstract class MultiplayerScreenMixin extends Screen {
@@ -20,22 +21,19 @@ public abstract class MultiplayerScreenMixin extends Screen {
         super(title);
     }
 
-    @Unique
-    private TextFieldWidget searchField;
+    // WeakHashMap so GC can clean up when screen is gone
+    static final WeakHashMap<MultiplayerScreen, TextFieldWidget> SEARCH_FIELDS = new WeakHashMap<>();
 
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo ci) {
         ServerSearchManager.searchQuery = "";
 
-        int x = this.width / 2 - 100;
-        int y = 8;
-
-        this.searchField = new TextFieldWidget(this.textRenderer, x, y, 200, 16, Text.literal("Search Server Name/IP..."));
-        this.searchField.setMaxLength(64);
-        this.searchField.setPlaceholder(Text.literal("Search..."));
-
         MultiplayerScreen mScreen = (MultiplayerScreen) (Object) this;
-        this.searchField.setChangedListener(query -> {
+
+        TextFieldWidget field = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 8, 200, 16, Text.literal("Search..."));
+        field.setMaxLength(64);
+        field.setPlaceholder(Text.literal("Search..."));
+        field.setChangedListener(query -> {
             ServerSearchManager.searchQuery = query;
             MultiplayerServerListWidget listWidget = ((MultiplayerScreenAccessor) mScreen).getServerListWidget();
             if (listWidget != null) {
@@ -43,42 +41,38 @@ public abstract class MultiplayerScreenMixin extends Screen {
             }
         });
 
-        this.addSelectableChild(this.searchField);
-        this.setFocused(this.searchField);
+        SEARCH_FIELDS.put(mScreen, field);
+        this.addSelectableChild(field);
+        this.setFocused(field);
     }
 
     @Inject(method = "removed", at = @At("TAIL"))
     private void onRemoved(CallbackInfo ci) {
         ServerSearchManager.searchQuery = "";
+        SEARCH_FIELDS.remove((MultiplayerScreen) (Object) this);
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        if (this.searchField == null) return;
-        boolean inBounds = mouseX >= this.searchField.getX()
-                && mouseX <= this.searchField.getX() + this.searchField.getWidth()
-                && mouseY >= this.searchField.getY()
-                && mouseY <= this.searchField.getY() + this.searchField.getHeight();
+        TextFieldWidget field = SEARCH_FIELDS.get((MultiplayerScreen) (Object) this);
+        if (field == null) return;
+        boolean inBounds = mouseX >= field.getX() && mouseX <= field.getX() + field.getWidth()
+                        && mouseY >= field.getY() && mouseY <= field.getY() + field.getHeight();
         if (inBounds) {
-            this.searchField.setFocused(true);
-            this.setFocused(this.searchField);
+            field.setFocused(true);
+            this.setFocused(field);
             cir.setReturnValue(true);
         } else {
-            this.searchField.setFocused(false);
+            field.setFocused(false);
         }
     }
 
-    @Inject(method = "keyPressed", at = @At("HEAD"), cancellable = true)
+    @Inject(method = "keyPressed", at = @At("HEAD"))
     private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        if (this.searchField != null && this.searchField.isFocused()) {
-            if (keyCode == 256) { // ESC
-                this.searchField.setFocused(false);
-                this.setFocused(null);
-            }
+        TextFieldWidget field = SEARCH_FIELDS.get((MultiplayerScreen) (Object) this);
+        if (field != null && field.isFocused() && keyCode == 256) {
+            field.setFocused(false);
+            this.setFocused(null);
         }
-    }
-
-    public TextFieldWidget servermanager$getSearchField() {
-        return this.searchField;
     }
 }

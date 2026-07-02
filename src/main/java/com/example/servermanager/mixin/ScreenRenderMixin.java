@@ -15,8 +15,7 @@ public abstract class ScreenRenderMixin {
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!((Object) this instanceof MultiplayerScreen)) return;
-        MultiplayerScreen mScreen = (MultiplayerScreen) (Object) this;
-        TextFieldWidget field = ((MultiplayerScreenMixin) (Object) mScreen).servermanager$getSearchField();
+        TextFieldWidget field = MultiplayerScreenMixin.SEARCH_FIELDS.get((MultiplayerScreen) (Object) this);
         if (field != null) {
             field.render(context, mouseX, mouseY, delta);
         }
