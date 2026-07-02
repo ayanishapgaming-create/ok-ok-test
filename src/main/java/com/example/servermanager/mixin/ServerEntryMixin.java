@@ -97,9 +97,8 @@ public abstract class ServerEntryMixin {
             } else {
                 // Render the dynamically downloaded flag texture
                 Identifier flagId = Identifier.of("servermanager", "flags/" + countryCode.toLowerCase());
-                // Flags from flagcdn are 20x15, we draw them resized to 16x11
-                // Use drawTexture with all required parameters including render pipeline
-                context.drawTexture(context.getRenderPipeline(), flagId, flagX, flagY, 0.0f, 0.0f, 16, 11, 16, 11, 16, 11);
+                // Simple texture draw - flags are 20x15, drawn at 16x11
+                context.drawTexture(flagId, flagX, flagY, 0, 0, 16, 11, 16, 11);
             }
         } else {
             // Loading placeholder
@@ -124,7 +123,7 @@ public abstract class ServerEntryMixin {
 
                 // Play standard GUI click sound
                 MinecraftClient.getInstance().getSoundManager().play(
-                    new PositionedSoundInstance(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0F, 1.0F, Random.create())
+                    new PositionedSoundInstance(SoundEvents.UI_BUTTON_CLICK, SoundCategory.MASTER, 1.0F, 1.0F, Random.create(), 0.0, 0.0, 0.0)
                 );
 
                 // Force-reloads the server list widget to apply new pinned order sorting immediately
