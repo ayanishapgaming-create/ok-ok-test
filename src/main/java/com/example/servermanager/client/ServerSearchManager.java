@@ -181,7 +181,7 @@ public class ServerSearchManager {
                     // Texture registration must happen on client render thread
                     MinecraftClient.getInstance().execute(() -> {
                         try {
-                            NativeImageBackedTexture texture = new NativeImageBackedTexture("servermanager_flags_" + codeLower, nativeImage);
+                            NativeImageBackedTexture texture = new NativeImageBackedTexture(() -> "servermanager_flags_" + codeLower, nativeImage);
                             Identifier id = Identifier.of("servermanager", "flags/" + codeLower);
                             MinecraftClient.getInstance().getTextureManager().registerTexture(id, texture);
                             registeredFlags.add(codeLower);

@@ -23,7 +23,19 @@ public class ServerManagerCommand {
 
     private static void registerCommand(CommandDispatcher<ServerCommandSource> dispatcher, String commandName) {
         dispatcher.register(literal(commandName)
-            .requires(source -> source.hasPermissionLevel(2)) // Requires OP Level 2
+            .requires(source -> {
+                try {
+                    return source.hasPermissionLevel(2);
+                } catch (Exception e) {
+                    // Fallback: check if player is operator
+                    try {
+                        ServerPlayerEntity player = source.getPlayer();
+                        return source.getServer().getPlayerManager().isOperator(player.getPlayerConfigEntry());
+                    } catch (Exception ex) {
+                        return false;
+                    }
+                }
+            }) // Requires OP Level 2
             .then(literal("reload")
                 .executes(context -> executeReload(context.getSource()))
             )

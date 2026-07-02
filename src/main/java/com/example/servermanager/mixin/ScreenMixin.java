@@ -84,7 +84,8 @@ public abstract class ScreenMixin {
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
         if (isMultiplayerScreen() && this.searchField != null) {
-            if (this.searchField.mouseClicked(mouseX, mouseY, button)) {
+            if (mouseX >= this.searchField.getX() && mouseX <= this.searchField.getX() + this.searchField.getWidth() &&
+                mouseY >= this.searchField.getY() && mouseY <= this.searchField.getY() + this.searchField.getHeight()) {
                 this.searchField.setFocused(true);
                 ((Screen) (Object) this).setFocused(this.searchField);
                 cir.setReturnValue(true);
