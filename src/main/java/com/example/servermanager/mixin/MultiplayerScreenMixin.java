@@ -1,7 +1,6 @@
 package com.example.servermanager.mixin;
 
 import com.example.servermanager.client.ServerSearchManager;
-import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerServerListWidget;
@@ -44,17 +43,8 @@ public abstract class MultiplayerScreenMixin extends Screen {
             }
         });
 
-        // Add as selectable child so Screen routes input to it automatically
         this.addSelectableChild(this.searchField);
-        // Set focused so keyboard input works immediately
         this.setFocused(this.searchField);
-    }
-
-    @Inject(method = "render", at = @At("TAIL"))
-    private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
-        if (this.searchField != null) {
-            this.searchField.render(context, mouseX, mouseY, delta);
-        }
     }
 
     @Inject(method = "removed", at = @At("TAIL"))
@@ -85,7 +75,10 @@ public abstract class MultiplayerScreenMixin extends Screen {
                 this.searchField.setFocused(false);
                 this.setFocused(null);
             }
-            // Let Screen's normal keyPressed routing handle the rest via focused element
         }
+    }
+
+    public TextFieldWidget servermanager$getSearchField() {
+        return this.searchField;
     }
 }

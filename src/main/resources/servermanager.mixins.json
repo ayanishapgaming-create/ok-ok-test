@@ -5,6 +5,7 @@
   "mixins": [],
   "client": [
     "MultiplayerScreenMixin",
+    "ScreenRenderMixin",
     "MultiplayerServerListWidgetMixin",
     "MultiplayerScreenAccessor",
     "ServerEntryMixin"
