@@ -1,5 +1,6 @@
 package com.example.servermanager.mixin;
 
+import com.example.servermanager.client.SearchFieldRegistry;
 import net.minecraft.client.gui.DrawContext;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -15,7 +16,7 @@ public abstract class ScreenRenderMixin {
     @Inject(method = "render", at = @At("TAIL"))
     private void onRender(DrawContext context, int mouseX, int mouseY, float delta, CallbackInfo ci) {
         if (!((Object) this instanceof MultiplayerScreen)) return;
-        TextFieldWidget field = MultiplayerScreenMixin.SEARCH_FIELDS.get((MultiplayerScreen) (Object) this);
+        TextFieldWidget field = SearchFieldRegistry.get((MultiplayerScreen) (Object) this);
         if (field != null) {
             field.render(context, mouseX, mouseY, delta);
         }

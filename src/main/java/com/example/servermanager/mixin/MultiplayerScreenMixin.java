@@ -1,5 +1,6 @@
 package com.example.servermanager.mixin;
 
+import com.example.servermanager.client.SearchFieldRegistry;
 import com.example.servermanager.client.ServerSearchManager;
 import net.minecraft.client.gui.screen.Screen;
 import net.minecraft.client.gui.screen.multiplayer.MultiplayerScreen;
@@ -12,8 +13,6 @@ import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
-import java.util.WeakHashMap;
-
 @Mixin(MultiplayerScreen.class)
 public abstract class MultiplayerScreenMixin extends Screen {
 
@@ -21,13 +20,9 @@ public abstract class MultiplayerScreenMixin extends Screen {
         super(title);
     }
 
-    // WeakHashMap so GC can clean up when screen is gone
-    static final WeakHashMap<MultiplayerScreen, TextFieldWidget> SEARCH_FIELDS = new WeakHashMap<>();
-
     @Inject(method = "init", at = @At("TAIL"))
     private void onInit(CallbackInfo ci) {
         ServerSearchManager.searchQuery = "";
-
         MultiplayerScreen mScreen = (MultiplayerScreen) (Object) this;
 
         TextFieldWidget field = new TextFieldWidget(this.textRenderer, this.width / 2 - 100, 8, 200, 16, Text.literal("Search..."));
@@ -41,7 +36,7 @@ public abstract class MultiplayerScreenMixin extends Screen {
             }
         });
 
-        SEARCH_FIELDS.put(mScreen, field);
+        SearchFieldRegistry.put(mScreen, field);
         this.addSelectableChild(field);
         this.setFocused(field);
     }
@@ -49,12 +44,12 @@ public abstract class MultiplayerScreenMixin extends Screen {
     @Inject(method = "removed", at = @At("TAIL"))
     private void onRemoved(CallbackInfo ci) {
         ServerSearchManager.searchQuery = "";
-        SEARCH_FIELDS.remove((MultiplayerScreen) (Object) this);
+        SearchFieldRegistry.remove((MultiplayerScreen) (Object) this);
     }
 
     @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
     private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        TextFieldWidget field = SEARCH_FIELDS.get((MultiplayerScreen) (Object) this);
+        TextFieldWidget field = SearchFieldRegistry.get((MultiplayerScreen) (Object) this);
         if (field == null) return;
         boolean inBounds = mouseX >= field.getX() && mouseX <= field.getX() + field.getWidth()
                         && mouseY >= field.getY() && mouseY <= field.getY() + field.getHeight();
@@ -69,7 +64,7 @@ public abstract class MultiplayerScreenMixin extends Screen {
 
     @Inject(method = "keyPressed", at = @At("HEAD"))
     private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        TextFieldWidget field = SEARCH_FIELDS.get((MultiplayerScreen) (Object) this);
+        TextFieldWidget field = SearchFieldRegistry.get((MultiplayerScreen) (Object) this);
         if (field != null && field.isFocused() && keyCode == 256) {
             field.setFocused(false);
             this.setFocused(null);
