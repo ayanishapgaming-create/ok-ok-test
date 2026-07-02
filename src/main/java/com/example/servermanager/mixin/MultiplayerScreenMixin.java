@@ -11,7 +11,6 @@ import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
-import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(MultiplayerScreen.class)
 public abstract class MultiplayerScreenMixin extends Screen {
@@ -45,29 +44,5 @@ public abstract class MultiplayerScreenMixin extends Screen {
     private void onRemoved(CallbackInfo ci) {
         ServerSearchManager.searchQuery = "";
         SearchFieldRegistry.remove((MultiplayerScreen) (Object) this);
-    }
-
-    @Inject(method = "mouseClicked", at = @At("HEAD"), cancellable = true)
-    private void onMouseClicked(double mouseX, double mouseY, int button, CallbackInfoReturnable<Boolean> cir) {
-        TextFieldWidget field = SearchFieldRegistry.get((MultiplayerScreen) (Object) this);
-        if (field == null) return;
-        boolean inBounds = mouseX >= field.getX() && mouseX <= field.getX() + field.getWidth()
-                        && mouseY >= field.getY() && mouseY <= field.getY() + field.getHeight();
-        if (inBounds) {
-            field.setFocused(true);
-            this.setFocused(field);
-            cir.setReturnValue(true);
-        } else {
-            field.setFocused(false);
-        }
-    }
-
-    @Inject(method = "keyPressed", at = @At("HEAD"))
-    private void onKeyPressed(int keyCode, int scanCode, int modifiers, CallbackInfoReturnable<Boolean> cir) {
-        TextFieldWidget field = SearchFieldRegistry.get((MultiplayerScreen) (Object) this);
-        if (field != null && field.isFocused() && keyCode == 256) {
-            field.setFocused(false);
-            this.setFocused(null);
-        }
     }
 }
