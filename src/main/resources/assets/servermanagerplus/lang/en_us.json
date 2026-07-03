@@ -1,0 +1,14 @@
+{
+  "servermanagerplus.search.servers": "Search servers...",
+  "servermanagerplus.search.worlds": "Search worlds...",
+  "servermanagerplus.pin.server": "Pin Server",
+  "servermanagerplus.unpin.server": "Unpin Server",
+  "servermanagerplus.pin.world": "Pin World",
+  "servermanagerplus.unpin.world": "Unpin World",
+  "servermanagerplus.pinned.only": "★ Pinned Only",
+  "servermanagerplus.all.servers": "☆ All Servers",
+  "servermanagerplus.all.worlds": "☆ All Worlds",
+  "servermanagerplus.flag.tooltip": "%s (%s)",
+  "servermanagerplus.country.unknown": "Unknown",
+  "servermanagerplus.country.lan": "Local Network"
+}
