@@ -2,6 +2,7 @@
   "required": true,
   "package": "com.example.servermanager.mixin",
   "compatibilityLevel": "JAVA_21",
+  "refmap": "servermanager.refmap.json",
   "mixins": [],
   "client": [
     "MultiplayerScreenMixin",
