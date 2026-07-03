@@ -1,86 +1,47 @@
 plugins {
-    id 'fabric-loom' version '1.16.3'
+    id 'fabric-loom' version '1.9-SNAPSHOT'
     id 'maven-publish'
 }
 
 version = project.mod_version
-group = project.maven_group
+group   = project.maven_group
 
 base {
     archivesName = project.archives_base_name
 }
 
 repositories {
-    // Fabric Maven
-    maven {
-        url = "https://maven.fabricmc.net/"
-    }
-
-    // Maven Central
-    mavenCentral()
-
-    // ModMenu / TerraformersMC
-    maven {
-        url = "https://maven.terraformersmc.com/"
-    }
+    // Fabric Maven is added automatically by Loom
 }
 
 dependencies {
-    // Minecraft
     minecraft "com.mojang:minecraft:${project.minecraft_version}"
-
-    // Yarn mappings
-    mappings "net.fabricmc:yarn:${project.yarn_mappings}:v2"
-
-    // Fabric Loader
+    mappings  "net.fabricmc:yarn:${project.yarn_mappings}:v2"
     modImplementation "net.fabricmc:fabric-loader:${project.loader_version}"
-
-    // Fabric API
     modImplementation "net.fabricmc.fabric-api:fabric-api:${project.fabric_version}"
 }
 
 processResources {
     inputs.property "version", project.version
-
+    filteringCharset "UTF-8"
     filesMatching("fabric.mod.json") {
-        expand(
-                "version": project.version
-        )
+        expand "version": project.version
     }
 }
 
+def targetJavaVersion = 21
 tasks.withType(JavaCompile).configureEach {
     options.encoding = "UTF-8"
-    options.release.set(21)
+    options.release  = targetJavaVersion
 }
 
 java {
-    toolchain {
-        languageVersion = JavaLanguageVersion.of(21)
-    }
-
+    toolchain.languageVersion = JavaLanguageVersion.of(targetJavaVersion)
     withSourcesJar()
 }
 
 jar {
     from("LICENSE") {
         rename { "${it}_${project.base.archivesName.get()}" }
-    }
-
-    reproducibleFileOrder = true
-    preserveFileTimestamps = false
-}
-
-publishing {
-    publications {
-        create("mavenJava", MavenPublication) {
-            artifactId = project.archives_base_name
-
-            from components.java
-        }
-    }
-
-    repositories {
-        // Add your Maven repository here when publishing.
     }
 }
